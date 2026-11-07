@@ -1,3 +1,4 @@
+
 `timescale 1ns / 1ps
 
 module sev_seg_tb;
@@ -14,14 +15,16 @@ module sev_seg_tb;
     // APB signals
     // --------------------------------------------------
     logic [ADDR_W-1:0] paddr;
-    logic              penable;
     logic              psel;
+    logic              penable;
     logic              pwrite;
     logic [31:0]       pwdata;
+    logic [3:0]        pstrb;
+    logic [2:0]        pprot;
 
+    logic [31:0]       prdata;
     logic              pready;
     logic              pslverr;
-    logic [31:0]       prdata;
 
     // --------------------------------------------------
     // 7-segment outputs
@@ -30,9 +33,49 @@ module sev_seg_tb;
     logic [3:0] seg7_an;
     logic       seg7_dp;
 
+    // --------------------------------------------------
+    // APB master read data and error
+    // --------------------------------------------------
+    logic [31:0] read_data;
+    bit error;
+
 
     // --------------------------------------------------
-    // DUT
+    // 100 MHz clock
+    // Period = 10 ns
+    // --------------------------------------------------
+    initial begin
+        clk = 1'b0;
+        forever #5 clk = ~clk;
+    end
+
+
+    // --------------------------------------------------
+    // Provided APB master BFM
+    // --------------------------------------------------
+    apb_master #(
+        .ADDR_WIDTH(ADDR_W),
+        .DATA_WIDTH(32)
+    ) master (
+        .PCLK    (clk),
+        .PRESETn (rst_n),
+
+        .PADDR   (paddr),
+        .PSEL    (psel),
+        .PENABLE (penable),
+        .PWRITE  (pwrite),
+        .PWDATA  (pwdata),
+        .PSTRB   (pstrb),
+        .PPROT   (pprot),
+
+        .PRDATA  (prdata),
+        .PREADY  (pready),
+        .PSLVERR (pslverr)
+    );
+
+
+    // --------------------------------------------------
+    // 7-segment controller DUT
     // --------------------------------------------------
     sev_seg #(
         .ADDR_W(ADDR_W)
@@ -57,135 +100,137 @@ module sev_seg_tb;
 
 
     // --------------------------------------------------
-    // 100 MHz clock
-    //
-    // Period = 10 ns
-    // --------------------------------------------------
-    initial begin
-        clk = 1'b0;
-
-        forever #5 clk = ~clk;
-    end
-
-
-    // --------------------------------------------------
-    // APB write task
-    // --------------------------------------------------
-    task automatic apb_write(
-        input logic [ADDR_W-1:0] address,
-        input logic [31:0]       data
-    );
-
-        begin
-
-            // -------------------------------
-            // APB setup phase
-            // -------------------------------
-            @(posedge clk);
-
-            paddr   <= address;
-            pwdata  <= data;
-            pwrite  <= 1'b1;
-            psel    <= 1'b1;
-            penable <= 1'b0;
-
-
-            // -------------------------------
-            // APB access phase
-            // -------------------------------
-            @(posedge clk);
-
-            penable <= 1'b1;
-
-
-            // -------------------------------
-            // Finish transaction
-            // -------------------------------
-            @(posedge clk);
-
-            psel    <= 1'b0;
-            penable <= 1'b0;
-            pwrite  <= 1'b0;
-            paddr   <= '0;
-            pwdata  <= '0;
-
-        end
-
-    endtask
-
-
-    // --------------------------------------------------
-    // Main stimulus
+    // Main test sequence
     // --------------------------------------------------
     initial begin
 
-        // Initial values
-        rst_n   = 1'b0;
+        // Initial reset
+        rst_n = 1'b0;
 
-        paddr   = '0;
-        penable = 1'b0;
-        psel    = 1'b0;
-        pwrite  = 1'b0;
-        pwdata  = 32'd0;
-
-
-        // Hold reset for a few clocks
         repeat (5)
             @(posedge clk);
 
+        @(negedge clk);
         rst_n = 1'b1;
 
 
         // --------------------------------------------------
-        // Write VAL register
+        // Write VAL register = 0x1234
         //
-        // digit3 = 1
-        // digit2 = 2
-        // digit1 = 3
-        // digit0 = 4
-        //
-        // Therefore lower 16 bits:
-        //
-        // 0001 0010 0011 0100
-        //
-        // = 0x1234
+        // DIG3 = 1
+        // DIG2 = 2
+        // DIG1 = 3
+        // DIG0 = 4
         // --------------------------------------------------
-
-        apb_write(
+        master.write(
             12'h004,
-            32'h0000_1234
+            32'h0000_1234,
+            '0,
+            3'b000,
+            error
         );
 
+        if (error)
+            $fatal(1, "APB write to VAL failed");
+
 
         // --------------------------------------------------
-        // DIM = 15
+        // Write DIM register = 15
         // Maximum brightness
         // --------------------------------------------------
-
-        apb_write(
+        master.write(
             12'h008,
-            32'h0000_000F
+            32'h0000_000F,
+            '0,
+            3'b000,
+            error
         );
 
+        if (error)
+            $fatal(1, "APB write to DIM failed");
+
 
         // --------------------------------------------------
-        // Enable controller
-        // CTL.EN = 1
+        // Write CTL register = 1
+        // Enable the display
         // --------------------------------------------------
-
-        apb_write(
+        master.write(
             12'h000,
-            32'h0000_0001
+            32'h0000_0001,
+            '0,
+            3'b000,
+            error
         );
 
+        if (error)
+            $fatal(1, "APB write to CTL failed");
+
 
         // --------------------------------------------------
-        // Allow display to run
+        // Read VAL register
         // --------------------------------------------------
+        master.read(
+            12'h004,
+            read_data,
+            3'b000,
+            error
+        );
 
+        if (error)
+            $fatal(1, "APB read from VAL failed");
+
+        if (read_data !== 32'h0000_1234)
+            $fatal(1, "VAL readback incorrect: got %h", read_data);
+
+        $display("VAL readback passed: %h", read_data);
+
+
+        // --------------------------------------------------
+        // Read DIM register
+        // --------------------------------------------------
+        master.read(
+            12'h008,
+            read_data,
+            3'b000,
+            error
+        );
+
+        if (error)
+            $fatal(1, "APB read from DIM failed");
+
+        if (read_data !== 32'h0000_000F)
+            $fatal(1, "DIM readback incorrect: got %h", read_data);
+
+        $display("DIM readback passed: %h", read_data);
+
+
+        // --------------------------------------------------
+        // Read CTL register
+        // --------------------------------------------------
+        master.read(
+            12'h000,
+            read_data,
+            3'b000,
+            error
+        );
+
+        if (error)
+            $fatal(1, "APB read from CTL failed");
+
+        if (read_data !== 32'h0000_0001)
+            $fatal(1, "CTL readback incorrect: got %h", read_data);
+
+        $display("CTL readback passed: %h", read_data);
+
+
+        // --------------------------------------------------
+        // Allow the display multiplexing to run
+        // --------------------------------------------------
         repeat (1000)
             @(posedge clk);
 
+
+        $display("All 7-segment controller tests passed.");
 
         $finish;
 
