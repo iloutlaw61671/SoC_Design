@@ -78,7 +78,8 @@ module sev_seg_tb;
     // 7-segment controller DUT
     // --------------------------------------------------
     sev_seg #(
-        .ADDR_W(ADDR_W)
+        .ADDR_W(ADDR_W),
+        .REFRESH_BITS (4)
     ) dut (
         .clk      (clk),
         .rst_n    (rst_n),
