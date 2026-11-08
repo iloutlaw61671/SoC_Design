@@ -23,7 +23,8 @@
 `timescale 1ns / 1ps
 
 module sev_seg#(
-    parameter int ADDR_W = 12
+    parameter int ADDR_W = 12,
+    parameter int REFRESH_BITS = 16
 )(
     // --------------------------------------------------
     // Global signals
@@ -214,7 +215,7 @@ end
     // Digit multiplexing
     // ==================================================
 
-    logic [15:0] refresh_counter;
+    logic [REFRESH_BITS-1:0] refresh_counter;
     logic [1:0]  display_number;
 
     always_ff @(posedge clk or negedge rst_n) begin
@@ -227,33 +228,13 @@ end
         else begin
            
 
-            if(refresh_counter==20) begin
-
-                refresh_counter<=0;
-
-                if(display_number==2'b11)
-
-                    display_number<=2'b00;
-
-                else begin
+             refresh_counter <= refresh_counter + 1'b1;
+                if(refresh_counter == '1) begin
 
                     display_number<=display_number+1;
                 end
 
-            end
-
-            else begin
-                 refresh_counter <= refresh_counter + 1'b1;
-            end
-
-
-            // TODO:
-            // increment refresh_counter
-
-            // TODO:
-            // when counter reaches chosen value:
-            // reset counter
-            // move to next digit
+              
 
         end
     end
@@ -392,15 +373,11 @@ end
 
 
 
-always_ff @(posedge clk or negedge rst_n) begin
-    if (!rst_n || refresh_counter==16'd0)
-        dim_counter <= 4'd0;
-    else
-        dim_counter <= dim_counter + 1'b1;
-end
 
 always_comb begin
-    dim_on = (dim_counter<dim_value);  //15 clks is the maximum, it won't be on for more than that
+    dim_counter = refresh_counter[REFRESH_BITS-1 -: 4];   // top 4 bits = ticking hand
+    dim_on = (dim_counter<dim_value);   //on whenever the top 4 bits of refresh counter (which 
+                                        //runs its entire value) is less that 15
 end
 
 
