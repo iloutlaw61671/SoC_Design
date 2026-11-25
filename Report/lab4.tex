@@ -1,0 +1,32 @@
+\chapter{SoC Integration}
+
+\section{RTL Top Level}
+
+\texttt{basys3\_top.sv} distributes the 100\,MHz board clock and forms an
+active-low reset from the centre button. It debounces selected switches and
+buttons and passes those inputs to AXI GPIO. The top level instantiates
+\texttt{soc\_top}, \texttt{sev\_seg}, and \texttt{ledcntrl\_top}.
+The generated \texttt{soc\_top} module comes from the Vivado block design.
+The board constraints connect the RTL outputs to the physical pins.
+
+\section{Peripheral Connections}
+
+The processor reaches the seven-segment controller through APB~0 and the LED
+controller through AHB-Lite. APB~1 returns a fixed response from the top level.
+
+\begin{table}[htbp]
+  \centering
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    Interface & CPU base address & Connection \\
+    \midrule
+    AXI GPIO & \texttt{0x40000000} & Debounced board inputs \\
+    AXI UART Lite & \texttt{0x40600000} & Board serial interface \\
+    APB 0 & \texttt{0x44A00000} & Seven-segment controller \\
+    AHB-Lite & \texttt{0x44A10000} & LED controller \\
+    APB 1 & \texttt{0x44A20000} & Fixed response in the RTL top level \\
+    \bottomrule
+  \end{tabular}
+  \caption{Selected addresses from the integrated Lab 6 snapshot.}
+  \label{tab:address-map}
+\end{table}

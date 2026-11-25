@@ -1,0 +1,30 @@
+\chapter{Vitis Platform and GPIO}
+
+\section{Task Description}
+
+Lab 5 uses a standalone MicroBlaze application to read the board switches
+through AXI GPIO and write their state to the LED outputs. The software
+exercise uses the Vivado hardware export as the input to Vitis.
+
+\section{Project Setup}
+
+The Vitis project contains the firmware source, application settings, and
+linker script. Its hardware platform is rebuilt from the Vivado XSA export.
+The standalone application starts in \texttt{app.c}. The latest archived
+firmware forwards the GPIO input to the dedicated LED controller, as described
+in Lab~6.
+
+The archived Lab 5 XSA contains the \texttt{basys3\_top} bitstream and memory
+map from Vivado 2025.2.
+
+\section{Lint and Synthesis}
+
+The Lab 5 lint workbook records 36 findings. Four flag unset signal bits,
+31 flag unread signal or port bits, and one flags an incomplete case statement
+in the debouncer. The unset-bit findings include \texttt{ahb\_hready} at the
+board top level. The workbook refers to the Lab 5 revision.
+
+Vivado completed synthesis of \texttt{basys3\_top} with zero errors and zero
+critical warnings. The utilization summary reports 2,388 slice LUTs, including
+188 used as memory, 2,225 flip-flops, and 32 block RAM tiles.
+Table~\ref{tab:resources} gives the archived counts for each synthesis run.

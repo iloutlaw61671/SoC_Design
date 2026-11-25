@@ -1,0 +1,35 @@
+\chapter{Peripheral Firmware and Debugging}
+
+\section{Firmware and ILA}
+
+The Lab 6 snapshot configures the LED controller for 1\,kHz at 100\% duty
+cycle, reads AXI GPIO channel~1, and copies the value to the LED enable
+register. The System ILA probes the display APB bus, the LED AHB-Lite bus,
+and the instruction and data local memory buses.
+
+\section{Synthesis Utilization}
+
+Table~\ref{tab:resources} records the available Vivado 2025.2 synthesis
+results for the standalone display controller and two board revisions.
+The Lab 6 board run includes the processor subsystem, controllers, and ILA.
+It uses 1,215 LUTs as memory and 46.5 of the 50 block RAM tiles (93\%).
+
+\begin{table}[htbp]
+  \centering
+  \begin{tabular}{@{}lrrl@{}}
+    \toprule
+    Synthesis scope & Slice LUTs & FFs & Block RAM tiles \\
+    \midrule
+    \texttt{sev\_seg} (Lab 2 standalone) & 56 & 47 & 0 \\
+    \texttt{basys3\_top} (Lab 5 full design) & 2,388 & 2,225 & 32 \\
+    \texttt{basys3\_top} (Lab 6 full design) & 7,481 & 8,329 & 46.5 \\
+    Final seven-segment controller & & & Pending \\
+    Final LED controller & & & Pending \\
+    Final \texttt{soc\_top} block design & & & Pending \\
+    \bottomrule
+  \end{tabular}
+  \caption{Archived resource counts and pending measurements.}
+  \label{tab:resources}
+\end{table}
+
+\todo{Export final hierarchical synthesis utilization for the two controllers and the SoC block design. Record RAMB36, RAMB18, and LUTRAM where reported.}

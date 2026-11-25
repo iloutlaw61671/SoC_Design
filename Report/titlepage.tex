@@ -1,0 +1,36 @@
+% Lab-report cover adapted from fhj-iee-template.typ, doc-type == "report".
+% Absolute positions affect this cover only; the body geometry is unchanged.
+\begin{titlepage}
+  \thispagestyle{empty}
+  \AddToHookNext{shipout/foreground}{%
+    \begingroup
+    \setlength{\unitlength}{1mm}%
+    \begin{picture}(0,0)
+      % Original report layout: 25 mm side margins, logo 40 mm from the top.
+      \put(115,-40){\makebox(0,0)[lt]{%
+        \includegraphics[width=70mm]{template/fhj-ee-logo.pdf}}}
+      % The template places the title 90 mm below its 40 mm top margin.
+      \put(25,-130){\makebox(0,0)[lt]{%
+        \begin{minipage}{160mm}
+          \centering
+          {\fontsize{20}{24}\selectfont\bfseries\reporttitle\par}
+          \vspace{32pt}
+          {\fontsize{16}{20}\selectfont\reporttype\par}
+          \vspace{32pt}
+          {\fontsize{12}{15}\selectfont\reportprogramme\par}
+          \vspace{10pt}
+          {\fontsize{11}{13}\selectfont\reportterm\par}
+        \end{minipage}}}
+      % Author and date: lower left, as in the original report cover.
+      \put(25,-264.5){\makebox(0,0)[lb]{%
+        \begin{minipage}{100mm}
+          \fontsize{11}{13}\selectfont
+          \reportauthor\par
+          \vspace{11pt}
+          \reportdate\par
+        \end{minipage}}}
+    \end{picture}%
+    \endgroup
+  }
+  \null
+\end{titlepage}

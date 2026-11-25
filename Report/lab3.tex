@@ -1,0 +1,19 @@
+\chapter{LED Controller}
+
+\section{Implementation}
+
+\texttt{ledcntrl\_top.sv} drives the sixteen board LEDs with a shared PWM
+signal. Each bit of \texttt{CTL} (\texttt{0x010}) enables one LED.
+\texttt{CFG} (\texttt{0x014}) holds the PWM frequency in bits~23--8 and the
+duty cycle in percent in bits~7--0. The controller provides interrupt status,
+mask, and clear registers.
+
+\section{Module Testbench}
+
+\texttt{led\_tb.sv} uses the AHB-Lite master to unmask the interrupt,
+set \texttt{CTL} to \texttt{0xAAAA}, and set \texttt{CFG} to
+\texttt{0x0003E832} for 1\,kHz PWM at 50\% duty cycle. It reads the control
+and configuration registers, waits for the interrupt, writes one to
+\texttt{INT\_CLR}, and waits for the interrupt to go low.
+
+\evidencefigure{led-waveform.png}{LED controller PWM and interrupt sequence.}{fig:led-waveform}{Capture the LED simulation showing the alternate LED mask, PWM period and duty cycle, and interrupt assertion and clear.}

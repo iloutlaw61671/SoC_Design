@@ -1,0 +1,60 @@
+# Local report output and verification scratch files
+/Report/build/
+/Report/results/raw/
+/.work/
+*.aux
+*.toc
+*.out
+*.synctex.gz
+*.log
+
+# Local handoff archives
+/Report/*.zip
+/Submission/*.zip
+
+# Vivado output and session files
+.Xil/
+*.cache/
+*.gen/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
+xsim.dir/
+*.jou
+*.str
+*.wdb
+*.wcfg
+*.vcd
+*.fst
+*.wlf
+*.dcp
+*.bit
+*.ltx
+*.mmi
+*.xsa
+*.rpt
+*.rpx
+*.vds
+*_utilization_synth.pb
+
+# Keep only the utilization reports referenced in the report or submission.
+!/Report/results/sev_seg_utilization_synth_lab2.rpt
+!/Report/results/basys3_top_utilization_synth_lab6.rpt
+!/Submission/SoC_Dice_Plain/results/final_utilization.rpt
+
+# Vitis workspace state, platform outputs and application builds
+**/VITIS/**/.ide/
+**/VITIS/**/_ide/
+**/VITIS/**/.metadata/
+**/VITIS/**/.rigel_lopper/
+**/VITIS/**/.vitis/
+**/VITIS/**/.cache/
+**/VITIS/**/build/
+**/VITIS/**/export/
+**/VITIS/**/bsp/
+**/VITIS/basys3component/hw/
+**/VITIS/**/compile_commands.json
+*.elf
+*.o
+*.a

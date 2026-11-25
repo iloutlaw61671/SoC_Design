@@ -1,0 +1,18 @@
+Lab 5 basys3_top synthesis utilization
+
+Vivado 2025.2, 11 November 2026, xc7a35tcpg236-2
+
+Slice LUTs                  2,388
+LUTs used as memory           188
+Slice flip-flops            2,225
+Block RAM tiles                32
+RAMB36E1                       32
+RAMB18                          0
+
+The counts come from lab05basys3_top_utilization_synth.pb. Its fields 301, 401,
+201, 601, and 801 correspond to slice LUTs, LUTs used as memory, flip-flops,
+block RAM tiles, and RAMB18. The mapping matches the paired .pb and text
+utilization reports in the Lab 2, Lab 4, and Lab 6 archives.
+
+The Lab 5 batch log lab05_basys3_top.vds records 32 RAMB36E1 cells and a
+successful synth_design run with zero errors and zero critical warnings.
