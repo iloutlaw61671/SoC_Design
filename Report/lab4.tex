@@ -2,11 +2,11 @@
 
 \section{Task Description}
 
-Integrate the seven-segment display and LED controllers into the SoC.
-Connect the display controller to APB~0 and the LED controller to AHB port~0.
-Give the unused APB~1 port a fixed read response. Use a testbench to drive
-the clock, release reset, and check that the MicroBlaze starts fetching
-instructions. Run lint, synthesis, and implementation on the integrated design.
+The task was to integrate the seven-segment display controller through APB~0
+and the LED controller through AHB port~0. The unused APB~1 port was required
+to return a fixed read value. The testbench was to drive the clock, release
+reset, and verify that the MicroBlaze starts fetching instructions. The task
+also included linting, synthesis, and implementation of the integrated design.
 
 \section{Results}
 
@@ -38,9 +38,8 @@ specifies \texttt{0xA5A55A5A} for this response.
 \subsection{Processor Startup Simulation}
 
 The archived \texttt{basys3\_tb} run released reset at 100\,ns and reached
-the end of the test at 100.1\,$\mu$s. To verify processor startup, inspect
-instruction reads on the local memory bus after the processor comes out of
-reset.
+the end of the test at 100.1\,$\mu$s. The processor startup check requires
+completed instruction reads on the local memory bus after reset release.
 
 \evidencefigure{lab4-startup-waveform.png}{MicroBlaze instruction reads after reset release in the Lab 4 simulation.}{fig:lab4-startup}{Capture reset release and the first completed instruction reads in the \texttt{basys3\_tb} waveform.}
 

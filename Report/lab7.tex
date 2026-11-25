@@ -1,23 +1,25 @@
 \chapter{Dice Operation and UART}
 
-\section{Dice Operation}
+\section{Task Description}
 
-Lab 7 calls for a build version on GPIO channel~1 and debounced \texttt{BTNU}
-and \texttt{SW[3:0]} on GPIO channel~2. A press of \texttt{BTNU} should
-roll each selected die, update its digit, and send the result through UART.
-The current snapshot contains a single-channel GPIO and the LED test firmware.
+The task was to implement a dice application with output on the seven-segment
+display and over UART. The firmware was required to read the FPGA build version
+from GPIO channel~1 and the debounced \texttt{BTNU} and \texttt{SW[3:0]}
+inputs from channel~2. The switches select the dice to roll. A press of
+\texttt{BTNU} was required to roll the selected dice, update their display
+digits, and transmit the results over UART.
 
-\todo{Document the GPIO wiring, version readback, dice generation, and UART output for the board build.}
+% Pending evidence: GPIO wiring, version readback, dice generation, and UART output.
 
-\section{Running Setup}
+\section{Results}
 
-Figure~\ref{fig:basys3-running} shows the dice application running on the
-Digilent BASYS3. The project uses Vivado and Vitis 2025.2.
+The dice application was demonstrated on a Digilent BASYS3, as shown in
+Fig.~\ref{fig:basys3-running}.
 
 \begin{figure}[!htbp]
   \centering
   \includegraphics[width=\linewidth]{figures/final/basys3-running.jpg}
-  \caption{BASYS3 board no. 11 displaying dice results 6, 4, 4, and 3.}
+  \caption{Rolled dice values on the seven-segment display.}
   \label{fig:basys3-running}
 \end{figure}
 
