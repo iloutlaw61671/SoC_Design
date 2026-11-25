@@ -11,6 +11,18 @@ and utilization summary are in `Report/results/`. The original Lab 2 and Lab 5
 synthesis logs, Lab 5 utilization database, and Lab 5 XSA are archived locally
 under `Report/results/raw/` and ignored by Git.
 
+## Lab responsibilities
+
+| Lab chapter | Responsible |
+| --- | --- |
+| [Lab 1](Report/lab1.tex) | Andi |
+| [Lab 2](Report/lab2.tex) | Vikram |
+| [Lab 3](Report/lab3.tex) | Vikram |
+| [Lab 4](Report/lab4.tex) | Andi |
+| [Lab 5](Report/lab5.tex) | Andi |
+| [Lab 6](Report/lab6.tex) | Vikram |
+| [Lab 7](Report/lab7.tex) | Vikram |
+
 ## What remains
 
 1. **Complete Lab 7.** Configure AXI GPIO as dual-channel. Wire a build version to channel 1 and debounced `BTNU` and `SW[3:0]` to channel 2. Extend `app.c` to read the version, roll on a button press, update selected digits and print the result over UART Lite. The latest available archive has one GPIO channel and its `app.c` mirrors GPIO inputs to the LED controller.
