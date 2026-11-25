@@ -7,13 +7,19 @@ and \texttt{SW[3:0]} on GPIO channel~2. A press of \texttt{BTNU} should
 roll each selected die, update its digit, and send the result through UART.
 The current snapshot contains a single-channel GPIO and the LED test firmware.
 
-\todo{Describe the final GPIO wiring, version readback, dice generation and UART output after the Lab 7 build runs on the board.}
+\todo{Document the GPIO wiring, version readback, dice generation, and UART output for the board build.}
 
 \section{Running Setup}
 
-The project uses the Digilent BASYS3 and Vivado and Vitis 2025.2.
+Figure~\ref{fig:basys3-running} shows the dice application running on the
+Digilent BASYS3. The project uses Vivado and Vitis 2025.2.
 
-\evidencefigure{basys3-running.jpg}{BASYS3 running the dice application, with the board number visible.}{fig:basys3-running}{Photograph the running BASYS3 with a dice value and the board number visible in the same frame. Record the board number in this section.}
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=\linewidth]{figures/final/basys3-running.jpg}
+  \caption{BASYS3 board no. 11 displaying dice results 6, 4, 4, and 3.}
+  \label{fig:basys3-running}
+\end{figure}
 
 \IfFileExists{figures/final/uart.png}{%
   \evidencefigure{uart.png}{Serial terminal showing dice results from the running board.}{fig:uart}{}%

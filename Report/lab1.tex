@@ -8,19 +8,18 @@ GPIO, timing, and access to the external display and LED controllers.
 
 \section{Block Design}
 
-The archived design uses the MicroBlaze 11.0 IP with 128\,KiB of local block
+The design uses the MicroBlaze 11.0 IP with 128\,KiB of local block
 RAM. The AXI crossbar connects the processor to GPIO, UART Lite, a timer,
-an interrupt controller, and the peripheral bridges. The address map of the
-integrated design is listed in Table~\ref{tab:address-map}.
+an interrupt controller, and the peripheral bridges. The controller addresses
+are listed in Table~\ref{tab:address-map}.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=\linewidth]{figures/Lab1/BlockDesign.jpg}
+  \caption{Vivado block design with the APB and AHB-Lite bridges.}
+  \label{fig:lab1-bd}
+\end{figure}
 
 \IfFileExists{figures/final/block-design.png}{%
-  \evidencefigure{block-design.png}{Vivado block design used for the final board build.}{fig:final-bd}{}
-}{%
-  \todo{Add a readable Vivado export of the final block design.}
-  \begin{figure}[!ht]
-    \centering
-    \includegraphics[width=\linewidth]{figures/Lab1/BlockDesign.jpg}
-    \caption{Earlier Vivado block design with the APB and AHB-Lite bridges.}
-    \label{fig:earlier-bd}
-  \end{figure}%
-}
+  \evidencefigure{block-design.png}{Expanded Vivado block design for the dice application.}{fig:final-bd}{}%
+}{}

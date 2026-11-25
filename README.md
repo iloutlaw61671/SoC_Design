@@ -29,7 +29,7 @@ under `Report/results/raw/` and ignored by Git.
 2. **Run the final design with Vivado and Vitis 2025.2.** Regenerate the bitstream and export a fresh XSA. Rebind the Vitis platform to that XSA, build the application, and run it on the BASYS3. Verify single-digit and multi-digit selections and compare the UART and display results. The archived UART Lite configuration is 9600 baud, 8 data bits, and no parity. Confirm the settings on the final design.
 3. **Run both module simulations and capture the figures below.** The archived Lab 2 captures document display setup and digit scanning. Refresh them from the final project and capture the LED testbench as well.
 4. **Export final synthesis utilization.** In the synthesized design, report `u_seg7_top`, `u_ledcntrl_top`, and the `soc_top` instance. Use the actual hierarchy names in the synthesized design. Vivado Tcl command `report_utilization -hierarchical -hierarchical_min_primitive_count 0 -file final_utilization.rpt` includes small instances. Save the final report under `Submission/SoC_Dice_Plain/results/` so it ships with the project. Record LUTs, FFs, LUTRAM, RAMB18, and RAMB36 where available. The archived Lab 6 report covers the full board top, including its ILA. [AMD Vivado 2025.2 Tcl reference](https://docs.amd.com/r/2025.2-English/ug835-vivado-tcl-commands/report_utilization)
-5. **Update and rebuild the report.** Fill the marked results and board number, then rebuild. Create a fresh project ZIP after the final project sources are committed. Upload the report PDF and the latest project ZIP to Moodle.
+5. **Update and rebuild the report.** Fill the marked results, then rebuild. Create a fresh project ZIP after the final project sources are committed. Upload the report PDF and the latest project ZIP to Moodle.
 
 ## Screenshots and photo
 
@@ -39,8 +39,9 @@ Save the final images under `Report/figures/final/` using these filenames.
 | --- | --- |
 | `sev-seg-waveform.png` | Vivado simulation with APB address, write/read data, select/enable and active-low anode and segment outputs. Show the `0x1234` setup and digit scan. |
 | `led-waveform.png` | Vivado simulation with `led_out`, `int_out`, AHB register writes and time cursors. Show the `0xAAAA` mask, 1 ms PWM period, 0.5 ms on-time and interrupt assertion and clear. |
-| `block-design.png` | Final Vivado block design with readable MicroBlaze, memory, APB/AHB bridges, dual GPIO, UART and ILA labels. The supplied diagrams show earlier revisions. |
-| `basys3-running.jpg` | A stable displayed dice value and the physical BASYS3 board number in the same photo. |
+| `lab4-startup-waveform.png` | Vivado `basys3_tb` startup simulation. Show reset release and the first MicroBlaze instruction reads. In `dut/soc_top`, add `proc_sys_reset_0_mb_reset`, `microblaze_0_ILMB_ABUS`, `microblaze_0_ILMB_READSTROBE`, and `microblaze_0_ILMB_READY`. |
+| `block-design.png` | Additional Vivado diagram showing the expanded design, including the dual-channel GPIO and ILA. The Lab 1 diagram is already in the report. |
+| [`basys3-running.jpg`](Report/figures/final/basys3-running.jpg) | Captured. Board no. 11 shows the dice results in the same photo. |
 | `uart.png` | Optional serial terminal capture of the version and dice output from the same build. |
 
 The Lab 6 archive also contains an ILA capture. It can document hardware bus activity if needed. The module simulations provide the waveform evidence requested for the report.
