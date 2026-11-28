@@ -1,52 +1,52 @@
-\chapter{Seven-Segment Controller}
+\chapter{7-Segment Display Driver}
 
-\section{Implementation}
+\section{Task Description}
 
-\texttt{sev\_seg.sv} multiplexes four digits over the active-low anodes and
-segment outputs. The APB registers \texttt{CTL} (\texttt{0x000}) enable the
-display, \texttt{VAL} (\texttt{0x004}) holds the digits and decimal points,
-and \texttt{DIM} (\texttt{0x008}) controls brightness. The four digits occupy
-the low 16 bits of \texttt{VAL}, with digit~0 in bits~3--0. The archived
-standalone synthesis results are listed in Table~\ref{tab:resources}.
+The task was to implement a 7-segment display controller and verify its
+functionality using a testbench. The task also included generating and
+analyzing the linting and synthesis reports of the implementation.
 
-\section{Module Testbench}
-
-\texttt{sev\_seg\_tb.sv} uses the APB master to write \texttt{0x1234} to
-\texttt{VAL}, \texttt{0xF} to \texttt{DIM}, and \texttt{0x1} to \texttt{CTL}.
-It checks the readback of all three registers. Figure~\ref{fig:display-setup}
-shows the APB transfers and Figure~\ref{fig:display-scan} shows digit~0.
-
-\evidencefigure{sev-seg-waveform.png}{Seven-segment controller waveform from the final source.}{fig:display-final}{Capture the APB transfers and digit scan from the final RTL simulation.}
-
-\begin{figure}[!htbp]
-  \centering
-  \includegraphics[width=\linewidth]{figures/Lab2/7seg_setup.png}
-  \caption{Lab 2 APB writes and readback for the display registers.}
-  \label{fig:display-setup}
+\section{Figures}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/Lab2/7seg_setup.png}
+    \caption{Seven-segment display setup with 0x1234 to VAL(paddr =0x0004), 0x000f to DIM (paddr = 0x0008) and 0x0001 to CTL (paddr = 0x0000.)}
+    \label{fig:7seg_setup}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Lab2/digit0.png}
+    \caption{Digit 0 (\texttt{seg7\_an}) expressing bit field corresponding to `4' (\texttt{seg7\_seg}).}
+    \label{fig:digit0}
 \end{figure}
 
-\clearpage
-\section{Digit Scan}
-
-\begin{figure}[!htb]
-  \centering
-  \includegraphics[width=\linewidth]{figures/Lab2/digit0.png}
-  \caption{Anode pattern \texttt{1110} selects digit~0, which displays 4.}
-  \label{fig:display-scan}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Lab2/digit1.png}
+    \caption{Digit 1 (\texttt{seg7\_an}) expressing bit field corresponding to `3' (\texttt{seg7\_seg}).}
+    \label{fig:digit1}
 \end{figure}
 
-\section{Lint and Synthesis}
-
-The archived Vivado linter found one \texttt{ASSIGN-10} violation on
-\texttt{pwdata}. The first unread bit was bit~17. The register map uses
-selected write-data fields for digit values, decimal points, and control.
-The archived standalone synthesis log records zero errors and zero critical
-warnings. Table~\ref{tab:resources} reports the archived area counts.
-
-\begin{figure}[!htb]
-  \centering
-  \includegraphics[width=\linewidth,trim=0 172bp 560bp 0,clip]{figures/Lab2/Lab02_sev_seg_linter.png}
-  \caption{Vivado lint finding on the seven-segment controller write-data port.}
-  \label{fig:sev-seg-lint}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Lab2/digit2.png}
+    \caption{Digit 2 (\texttt{seg7\_an}) expressing bit field corresponding to `2' (\texttt{seg7\_seg}).}
+    \label{fig:digit2}
 \end{figure}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Lab2/digit3.png}
+    \caption{Digit 3 (\texttt{seg7\_an}) expressing bit field corresponding to `1' (\texttt{seg7\_seg}).}
+    \label{fig:digit3}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,trim=0 172bp 560bp 0,clip]{figures/Lab2/Lab02_sev_seg_linter.png}
+    \caption{Vivado lint result for the 7-segment display driver.}
+    \label{fig:7seg_lint}
+\end{figure}
+\section{Discussion}
+The 7-segment display controller was implemented and verified with a testbench, which uses the provided APB master to write to and read from the registers. Figure~\ref{fig:7seg_setup} shows the setup of the module, with \texttt{0x1234} written to VAL, \texttt{0x000F} written to DIM and \texttt{0x0001} written to CTL. Figure~\ref{fig:digit0} shows digit 0 displaying the segment pattern for `4'. Similarly, Figure~\ref{fig:digit1}, Figure~\ref{fig:digit2} and Figure~\ref{fig:digit3} show digits 1, 2 and 3 displaying `3', `2' and `1' respectively.
+\newpage

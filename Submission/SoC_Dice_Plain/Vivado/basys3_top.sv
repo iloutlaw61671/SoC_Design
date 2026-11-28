@@ -31,7 +31,7 @@ module basys3_top(
   input  wire          btnD  , // I; Down 
   input  wire          btnR  , // I; Left  
   input  wire          btnL  , // I; Right
-	 
+ 
   // USB-RS232 Interface
   output wire          RsTx  , // O; TXD  
   input  wire          RsRx  , // I; RXD
@@ -75,10 +75,13 @@ module basys3_top(
   wire [1:0]  ahb_htrans;
   wire [31:0] ahb_hwdata;
   wire        ahb_hwrite;
-
+wire [31:0] gpio_out;
+wire [15:0] ledcntrl_led;
+ assign led = sw[12] ? {8'h00, gpio_out[7:0]} : ledcntrl_led;
   // 28.10.2026
-            
-   
+wire [31:0] version;
+
+
   // Testmux
   //                         logic [15:0] test_mux_din  [3:0];
   // (* MARK_DEBUG="TRUE" *) logic [1:0]  test_mux_sel;
@@ -90,17 +93,17 @@ module basys3_top(
   // -------------------------------------------------------------------------
   
   // Reset generation
-  always @(negedge clk or posedge btnC) begin
-    if (btnC) begin
+  always @(negedge clk or negedge sw[4]) begin
+    if (!sw[4]) begin
       rst_nff <= 2'b00;
     end else begin
      rst_nff <= {rst_nff[0], 1'b1};
     end  
   end
   assign rst_n = rst_nff[1];
-  
-  // Handling of all IOs: sync debounce and pulse generation (if required)
-  assign deb_din = {sw[15], sw[14], sw[13], sw[2], sw[1], sw[0], btnD, btnU};
+  assign version = 32'd1;
+  // Handling of all IOs: sync debounce and pulse geeration (if required)
+  assign deb_din = {sw[15], btnC, sw[3], sw[2], sw[1], sw[0], btnD, btnU};
   ste_debounce_array #(
     .NBR      (8),
     .SYNC     (8'b11_1_11_111),
@@ -138,7 +141,7 @@ ledcntrl_top u_ledcntrl_top (
   .hwdata   (ahb_hwdata),
   .hwrite   (ahb_hwrite),
   .hsel     (1'b1),
-  .led_out  (led)
+  .led_out  (ledcntrl_led)
   );
 
   // 28.10.2026
@@ -162,9 +165,10 @@ ledcntrl_top u_ledcntrl_top (
   wire apb_1_pwrite;
 
   
-  assign apb_1_prdata  = 32'ha5a5_a5a5;
+  assign apb_1_prdata  = 32'ha5a5_5a5a;
   assign apb_1_pready  = 1'b1;
   assign apb_1_pslverr = 1'b0; 
+
 
   sev_seg #(
     .ADDR_W(12)
@@ -207,8 +211,10 @@ soc_top soc_top (
   .apb_1_pwrite (apb_1_pwrite ),
   .clk_100mhz    (clk),
   .gpio_0_tri_i (deb_dout),
-  .gpio_0_tri_o (),
+  .gpio_0_tri_o (gpio_out),
   .gpio_0_tri_t (),
+  .GPIO2_tri_i (version),
+  .GPIO2_tri_o (),
   .pwm          (),
   .reset_n      (rst_n),
   .uart_0_rxd     (RsRx),
@@ -226,6 +232,7 @@ soc_top soc_top (
   .ahb_htrans   (ahb_htrans),
   .ahb_hwdata   (ahb_hwdata),
   .ahb_hwrite   (ahb_hwrite)
+ 
 );  
   
 endmodule

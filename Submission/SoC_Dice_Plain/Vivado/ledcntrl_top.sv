@@ -18,7 +18,8 @@ module ledcntrl_top #(
     input  wire         hready,
     output logic        hready_out,
     output logic        hresp,
-    input wire hsel,
+    input  wire         hsel,
+
     // --------------------------------------------------------
     // Interrupt
     // --------------------------------------------------------
@@ -79,7 +80,7 @@ module ledcntrl_top #(
             // a valid AHB transfer.
             valid_d <= hsel && htrans[1];
 
-           if (hsel && htrans[1]) begin
+            if (hsel && htrans[1]) begin
                 addr_d  <= haddr[11:0];
                 write_d <= hwrite;
             end
@@ -101,12 +102,30 @@ module ledcntrl_top #(
 
 
     // ========================================================
-    // PWM calculations
+    // PWM using a phase accumulator (no division needed)
     // ========================================================
+    //
+    // Every clock cycle:
+    //   phase_sum = phase_acc + frequency
+    //   if phase_sum >= CLK_FREQ_HZ:
+    //       phase_acc = phase_sum - CLK_FREQ_HZ   (end of one PWM period)
+    //   else:
+    //       phase_acc = phase_sum
+    //
+    // This gives 'frequency' period ends per second.
+    //
+    // Within one period, phase_acc rises linearly from about 0
+    // to CLK_FREQ_HZ, so the LEDs are ON while:
+    //   phase_acc < (CLK_FREQ_HZ / 100) * duty_cycle
+    //
 
-    logic [31:0] pwm_counter;
-    logic [31:0] period_cycles;
-    logic [31:0] on_cycles;
+    // CLK_FREQ_HZ / 100: constant, calculated by the tool,
+    // so no hardware divider is built.
+    localparam logic [31:0] DUTY_STEP = 32'(CLK_FREQ_HZ / 100);
+
+    logic [31:0] phase_acc;       // phase accumulator
+    logic [32:0] phase_sum;       // phase_acc + frequency (one extra bit)
+    logic [31:0] duty_threshold;  // LEDs ON while phase_acc < duty_threshold
 
     logic frequency_valid;
     logic pwm_on;
@@ -117,95 +136,67 @@ module ledcntrl_top #(
     // 500 Hz ... 10 kHz
 
     always_comb begin
-
         frequency_valid =
             (frequency >= 16'd500) &&
             (frequency <= 16'd10000);
-
-
-        if (frequency_valid) begin
-
-            // Example:
-            //
-            // 100 MHz clock
-            // 1000 Hz PWM
-            //
-            // 100,000,000 / 1000 = 100,000 clock cycles
-
-            period_cycles = CLK_FREQ_HZ / frequency;
-
-
-            // Duty cycle is interpreted as percentage.
-            //
-            // Example:
-            // duty_cycle = 50
-            // -> LED is ON for 50% of the PWM period.
-
-            on_cycles =
-                (period_cycles * duty_cycle) / 100;
-
-        end
-        else begin
-            period_cycles = 32'd0;
-            on_cycles     = 32'd0;
-        end
     end
 
 
-    // PWM is ON while the counter is below the
-    // calculated ON time.
+    // Next accumulator value and period end
 
     always_comb begin
-        pwm_on = 1'b0;
 
-        if (frequency_valid) begin
+        phase_sum = {1'b0, phase_acc} + {17'd0, frequency};
 
-            if (duty_cycle >= 8'd100)
-                pwm_on = 1'b1;
+        terminal_count = frequency_valid &&
+                         (phase_sum >= 33'(CLK_FREQ_HZ));
 
-            else if (pwm_counter < on_cycles)
-                pwm_on = 1'b1;
-
-        end
     end
 
 
-    // Terminal count = end of one PWM period.
-
-    always_comb begin
-        terminal_count = 1'b0;
-
-        if (frequency_valid &&
-            (pwm_counter >= period_cycles - 1)) begin
-
-            terminal_count = 1'b1;
-
-        end
-    end
-
-
-    // ========================================================
-    // PWM counter
-    // ========================================================
+    // Phase accumulator register
 
     always_ff @(posedge clk or negedge reset_n) begin
 
         if (!reset_n) begin
-            pwm_counter <= 32'd0;
+            phase_acc <= 32'd0;
         end
 
         else if (!frequency_valid) begin
-            pwm_counter <= 32'd0;
+            phase_acc <= 32'd0;
         end
 
         else if (terminal_count) begin
-            pwm_counter <= 32'd0;
+            // End of period: subtract CLK_FREQ_HZ, keep the remainder
+            phase_acc <= 32'(phase_sum - 33'(CLK_FREQ_HZ));
         end
 
         else begin
-            pwm_counter <= pwm_counter + 1'b1;
+            phase_acc <= phase_sum[31:0];
         end
 
+    end
+
+
+    // Duty cycle threshold, stored in a register.
+    // duty_cycle >= 100 gives a threshold at or above
+    // CLK_FREQ_HZ, so the LEDs stay ON for the whole period.
+    // duty_cycle = 0 gives a threshold of 0, so the LEDs stay OFF.
+
+    always_ff @(posedge clk or negedge reset_n) begin
+
+        if (!reset_n)
+            duty_threshold <= 32'd0;
+        else
+            duty_threshold <= DUTY_STEP * {24'd0, duty_cycle};
+
+    end
+
+
+    // PWM output
+
+    always_comb begin
+        pwm_on = frequency_valid && (phase_acc < duty_threshold);
     end
 
 
@@ -273,7 +264,7 @@ module ledcntrl_top #(
 
                         // Writing 1 clears the interrupt.
                         if (hwdata[0])
-                            int_status <= 1'b0;          
+                            int_status <= 1'b0;
 
                     end
 
@@ -329,7 +320,7 @@ module ledcntrl_top #(
 
         case (addr_d)
 
-            ADDR_INT_CLR: begin     ///
+            ADDR_INT_CLR: begin
                 hrdata = 32'h0000_0000;
             end
 

@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0xA45A24851DACB4EF",
+      "boundary_crc": "0xCCF308DF1832125D",
       "device": "xc7a35tcpg236-2",
       "gen_directory": "../../../../basys3_top.gen/sources_1/bd/soc_top",
       "name": "soc_top",
@@ -269,6 +269,37 @@
             "direction": "O"
           }
         }
+      },
+      "GPIO2": {
+        "mode": "Master",
+        "vlnv_bus_definition": "xilinx.com:interface:gpio:1.0",
+        "vlnv": "xilinx.com:interface:gpio_rtl:1.0",
+        "hdl_attributes": {
+          "LOCKED": {
+            "value": "FALSE",
+            "value_src": "default"
+          }
+        },
+        "port_maps": {
+          "TRI_I": {
+            "physical_name": "GPIO2_tri_i",
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "TRI_O": {
+            "physical_name": "GPIO2_tri_o",
+            "direction": "O",
+            "left": "31",
+            "right": "0"
+          },
+          "TRI_T": {
+            "physical_name": "GPIO2_tri_t",
+            "direction": "O",
+            "left": "31",
+            "right": "0"
+          }
+        }
       }
     },
     "ports": {
@@ -489,7 +520,12 @@
         "xci_name": "soc_top_axi_gpio_0_0",
         "xci_path": "ip\\soc_top_axi_gpio_0_0\\soc_top_axi_gpio_0_0.xci",
         "inst_hier_path": "axi_gpio_0",
-        "has_run_ip_tcl": "true"
+        "has_run_ip_tcl": "true",
+        "parameters": {
+          "C_IS_DUAL": {
+            "value": "1"
+          }
+        }
       },
       "lmb_bram_if_cntlr_0": {
         "vlnv": "xilinx.com:ip:lmb_bram_if_cntlr:4.0",
@@ -956,6 +992,12 @@
         "interface_ports": [
           "gpio_0",
           "axi_gpio_0/GPIO"
+        ]
+      },
+      "axi_gpio_0_GPIO2": {
+        "interface_ports": [
+          "axi_gpio_0/GPIO2",
+          "GPIO2"
         ]
       },
       "axi_intc_0_interrupt": {

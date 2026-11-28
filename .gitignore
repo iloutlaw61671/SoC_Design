@@ -41,6 +41,8 @@ xsim.dir/
 # Keep only the utilization reports referenced in the report or submission.
 !/Report/results/sev_seg_utilization_synth_lab2.rpt
 !/Report/results/basys3_top_utilization_synth_lab6.rpt
+!/Report/results/ledcntrl_utilization_synth_lab3.rpt
+!/Report/results/ledcntrl_timing_synth_lab3.rpt
 !/Submission/SoC_Dice_Plain/results/final_utilization.rpt
 
 # Vitis workspace state, platform outputs and application builds
